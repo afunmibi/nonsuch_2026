@@ -1,0 +1,78 @@
+
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; padding: 40px; }
+    h1 { color: #4f46e5; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; font-size: 28px; }
+    h2 { color: #1e1b4b; margin-top: 30px; background: #f3f4f6; padding: 10px; border-radius: 5px; font-size: 22px; }
+    h3 { color: #4338ca; border-left: 5px solid #4338ca; padding-left: 10px; margin-top: 20px; font-size: 18px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background-color: #f9fafb; font-weight: bold; }
+    .highlight { background-color: #e0e7ff; padding: 15px; border-radius: 8px; font-style: italic; border: 1px solid #c7d2fe; margin-bottom: 15px; }
+    .credentials { background-color: #fff7ed; padding: 15px; border: 1px solid #ffedd5; border-radius: 8px; }
+    ul { margin-bottom: 20px; }
+    li { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+    <h1>Nonsuch Medicare Portal - Project Demo Guide</h1>
+    
+    <p>This document serves as a guide for the project demonstration, outlining the key functionalities, the demo script, and the testing credentials for the Nonsuch Medicare Portal.</p>
+
+    <h2>1. Executive Summary</h2>
+    <p>The Nonsuch Medicare Portal is a comprehensive Health Maintenance Organization (HMO) management platform. It digitizes the entire lifecycle of medical insurance operations, from patient enrollment and clinical monitoring to multi-tier bill vetting and hospital payment processing. It is built for scalability, security, and professional efficiency.</p>
+
+    <h2>2. Demo Presentation Script</h2>
+    
+    <h3>Opening Statement</h3>
+    <div class="highlight">
+        "Welcome to the Nonsuch Medicare Portal. This is a centralized Health Insurance Management System built to eliminate manual paperwork and ensure clinical and financial transparency between our HMO and the hospitals in our network."
+    </div>
+
+    <h3>The Clinical Workflow (Log Requests & Monitoring)</h3>
+    <p>"Our system manages the early stages of patient care through Log Requests and Authorization Codes. For patients requiring admission, the Clinical Monitoring suite allows our staff to track vitals and length of stay in real-time, ensuring efficient utilization of health resources."</p>
+
+    <h3>The Provider Portal (The Hospital Experience)</h3>
+    <p>"Hospitals log into a dedicated portal to upload monthly claims. The system automatically renames files using the hospital name and billing month (e.g., <b>City_Hospital_October_2023.pdf</b>), giving us a perfectly organized audit trail out of the box."</p>
+
+    <h3>Internal Vetting & Approval (The Management Tier)</h3>
+    <p>"Claims undergo a rigorous 4-step vetting process. It starts with the <b>Underwriter (UD)</b> for cost vetting, the <b>Case Manager (CM)</b> for audit, and final approval by the <b>Medical Director (MD)</b> and <b>General Manager (GM)</b>. This provides absolute financial oversight."</p>
+
+    <h2>3. Login Credentials (Testing)</h2>
+    <p><strong>Note:</strong> All accounts listed below use the default password: <strong>password</strong></p>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Role</th>
+                <th style="width: 35%;">Email Address</th>
+                <th>Primary Use in Demo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><b>Admin</b></td><td>admin@nonsuch.com</td><td>User Management / Management Oversight</td></tr>
+            <tr><td><b>General Manager (GM)</b></td><td>gm@nonsuch.com</td><td>Final Financial Approval & Stats</td></tr>
+            <tr><td><b>Medical Director (MD)</b></td><td>md@nonsuch.com</td><td>Clinical Approval of High-Value Bills</td></tr>
+            <tr><td><b>Case Manager (CM)</b></td><td>cm@nonsuch.com</td><td>Monitoring Logs & Bill Auditing</td></tr>
+            <tr><td><b>Underwriter (UD)</b></td><td>ud@nonsuch.com</td><td>Technical Cost Vetting</td></tr>
+            <tr><td><b>Healthcare Provider (HCP)</b></td><td>hospital@nonsuch.com</td><td>Uploading Monthly Bill Files</td></tr>
+            <tr><td><b>IT Support</b></td><td>it@nonsuch.com</td><td>System Maintenance & Document Auditing</td></tr>
+            <tr><td><b>Staff</b></td><td>staff@nonsuch.com</td><td>General Data Oversight</td></tr>
+        </tbody>
+    </table>
+
+    <h2>4. Technical Best Practices & Selling Points</h2>
+    <ul>
+        <li><strong>Multi-Tenancy Security:</strong> Hospitals are strictly siloed; Hospital A can never access or see data belonging to Hospital B.</li>
+        <li><strong>Automated File Management:</strong> Uploaded bills are automatically renamed and timestamped for clean server storage and easy downloading.</li>
+        <li><strong>Admin Protection Logic:</strong> Higher-tier management roles have dashboard access but are restricted from deleting primary Admin accounts.</li>
+        <li><strong>Professional Grade UI:</strong> Uses modern typography and a high-end color palette to instill trust and professionalism.</li>
+        <li><strong>Hierarchical Workstations:</strong> Each user role lands on a specific dashboard tailored exactly to their job function.</li>
+    </ul>
+
+    <p style="margin-top: 50px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by Antigravity AI for Nonsuch Medicare Portal &copy; 2024
+    </p>
+</body>
+</html>
