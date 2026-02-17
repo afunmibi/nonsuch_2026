@@ -10,8 +10,8 @@
         encoded_pa: '{{ base64_encode($log->pa_code) }}',
         billing_month: '{{ $log->billing_month }}',
         admission_days: {{ $log->admission_days ?? 0 }},
-        initialServices: {{ $log->services->toJson() }},
-        initialDrugs: {{ $log->drugs->toJson() }}
+        initialServices: @js($log->services),
+        initialDrugs: @js($log->drugs)
     })" x-cloak>
 
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6">

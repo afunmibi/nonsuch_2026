@@ -106,6 +106,77 @@
             </div>
         </div>
 
+        {{-- Utilization Analysis & Affordability Reminder --}}
+        @if($enrolment)
+        <div class="bg-white rounded-2xl shadow-xl border-2 {{ $enrolment->isHighUtilization() ? 'border-amber-300 ring-4 ring-amber-50' : 'border-slate-200' }} overflow-hidden">
+            <div class="bg-slate-50 px-6 py-4 border-b-2 border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-indigo-500"></i>
+                        Plan Utilization Analysis
+                    </h3>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1 italic">
+                        <i class="fas fa-info-circle mr-1 text-indigo-400"></i>
+                        Reminder: <strong>Package Limit</strong> (₦{{ number_format($enrolment->package_limit, 2) }}) is what the company can afford for this client. 
+                        (Package Price: ₦{{ number_format($enrolment->package_price, 2) }} is what the client paid)
+                    </p>
+                </div>
+                @if($enrolment->isHighUtilization())
+                    <span class="bg-amber-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full animate-pulse shadow-md">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> MANAGEMENT ALERT: HIGH UTILIZATION
+                    </span>
+                @endif
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col items-center md:items-start">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-widest">Total Utilized</span>
+                        <p class="text-xl font-black text-slate-800 tracking-tight">₦{{ number_format($enrolment->total_utilized, 2) }}</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col items-center md:items-start">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-widest">Remaining Balance</span>
+                        <p class="text-xl font-black {{ $enrolment->remaining_balance < 0 ? 'text-red-600' : 'text-emerald-600' }} tracking-tight">
+                            ₦{{ number_format($enrolment->remaining_balance, 2) }}
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-widest">Usage Percentage</span>
+                            <span class="text-xs font-bold font-mono {{ $enrolment->utilization_rate >= 80 ? 'text-amber-600' : 'text-indigo-600' }}">
+                                {{ $enrolment->utilization_rate }}%
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
+                            <div class="h-full rounded-full transition-all duration-1000 ease-out {{ $enrolment->utilization_rate >= 80 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-indigo-500 to-indigo-600' }}" 
+                                 style="width: {{ min($enrolment->utilization_rate, 100) }}%"></div>
+                        </div>
+                        @if($enrolment->isHighUtilization())
+                            <p class="text-[10px] text-amber-700 font-bold mt-3 bg-amber-50 p-2 rounded-lg border border-amber-100 flex items-center gap-2">
+                                <i class="fas fa-shield-alt"></i> Management Notice: Use of this plan exceeds 80% threshold.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+
+                @if($log->package_price > $log->package_limit)
+                    <div class="mt-6 p-4 bg-red-50 border-2 border-red-100 rounded-xl flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 border border-red-200">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
+                        </div>
+                        <p class="text-xs text-red-800 font-bold">
+                            Financial Disadvantage Alert: The Package Price (₦{{ number_format($log->package_price, 2) }}) 
+                            exceeds the affordable limit (₦{{ number_format($log->package_limit, 2) }}) by 
+                            <span class="text-red-600 text-sm font-black underline mx-1">₦{{ number_format($log->package_price - $log->package_limit, 2) }}</span>
+                        </p>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <!-- Services Table -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-slate-200 overflow-hidden">
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b-2 border-slate-200 flex justify-between items-center">

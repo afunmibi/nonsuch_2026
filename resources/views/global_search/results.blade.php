@@ -75,6 +75,63 @@
             </div>
         </div>
 
+        <!-- Utilization Analysis & Management Alert -->
+        <div class="bg-white rounded-2xl shadow-sm border {{ $enrolment->isHighUtilization() ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-200' }} overflow-hidden">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="font-bold text-slate-700 uppercase tracking-wider text-sm flex items-center gap-2">
+                        <i class="fas fa-chart-line text-indigo-500"></i>
+                        Utilization Analysis
+                    </h3>
+                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">
+                        <i class="fas fa-info-circle mr-1 text-indigo-400"></i>
+                         Reminder: <strong>Package Limit</strong> (₦{{ number_format($enrolment->package_limit, 2) }}) is what the company can afford for this client. 
+                         (Package Price: ₦{{ number_format($enrolment->package_price, 2) }})
+                    </p>
+                </div>
+                @if($enrolment->isHighUtilization())
+                    <div class="flex items-center gap-2 bg-amber-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full animate-pulse shadow-sm">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        MANAGEMENT ALERT: HIGH UTILIZATION
+                    </div>
+                @endif
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-center text-center md:text-left">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-widest">Total Utilized</span>
+                        <p class="text-xl font-black text-slate-800 tracking-tight">₦{{ number_format($enrolment->total_utilized, 2) }}</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-widest">Remaining Balance</span>
+                        <p class="text-xl font-black {{ $enrolment->remaining_balance < 0 ? 'text-red-600' : 'text-emerald-600' }} tracking-tight">
+                            ₦{{ number_format($enrolment->remaining_balance, 2) }}
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2 px-2">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-widest">Utilization Rate</span>
+                            <span class="text-xs font-bold font-mono {{ $enrolment->utilization_rate >= 80 ? 'text-amber-600' : 'text-indigo-600' }}">
+                                {{ $enrolment->utilization_rate }}%
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
+                            <div class="h-full rounded-full transition-all duration-1000 ease-out {{ $enrolment->utilization_rate >= 80 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-indigo-500 to-indigo-600' }}" 
+                                 style="width: {{ min($enrolment->utilization_rate, 100) }}%"></div>
+                        </div>
+                        @if($enrolment->isHighUtilization())
+                            <p class="text-[10px] text-amber-700 font-bold mt-3 bg-amber-50 p-2 rounded border border-amber-100">
+                                <i class="fas fa-user-shield mr-1"></i> Informed Management: Client utilization is excessively high for the current plan limits.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Recent Visits (Last 5) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">

@@ -29,7 +29,11 @@ class LogRequestController extends Controller
     {
         // Load relationships to show staff names and package details in the view
         $logRequest->load(['staff', 'package']);
-        return view('logRequests.show', compact('logRequest'));
+        
+        // Fetch enrolment for utilization checking
+        $enrolment = \App\Models\Enrolment::where('policy_no', $logRequest->policy_no)->first();
+        
+        return view('logRequests.show', compact('logRequest', 'enrolment'));
     }
 
     /**

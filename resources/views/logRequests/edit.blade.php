@@ -77,10 +77,15 @@
                                     <div class="text-sm font-bold text-gray-900">{{ $log->full_name }}</div>
                                         <div class="text-xs text-gray-500 font-mono">{{ $log->policy_no }}</div>
                                         <div>
-                                            <div class="mt-1 inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                        <div class="mt-1 inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
                                                 {{ $log->package_code }}
                                             </div>
-                                        </td>
+                                            @if($log->package_price > $log->package_limit)
+                                                <div class="mt-1 inline-block px-2 py-0.5 rounded text-[9px] font-black bg-red-100 text-red-700 border border-red-300 animate-pulse">
+                                                    <i class="fas fa-exclamation-triangle mr-1"></i>OVERAGE
+                                                </div>
+                                            @endif
+                                        </div>
                                 
                                 <td class="px-6 py-4 text-xs">
                                         <div class="font-semibold text-gray-700"><span class="text-gray-400">Pry:</span>

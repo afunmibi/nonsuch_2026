@@ -60,6 +60,79 @@
                     </div>
                 </div>
 
+                {{-- Utilization Analysis & Affordability Reminder --}}
+                <div class="mx-8 mt-6">
+                    <div class="bg-white rounded-xl border {{ ($enrolment && $enrolment->isHighUtilization()) ? 'border-amber-400 ring-2 ring-amber-50' : 'border-gray-200' }} shadow-sm overflow-hidden">
+                        <div class="px-5 py-3 bg-gray-50 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                             <div>
+                                <h5 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Plan Utilization context</h5>
+                                <p class="text-[10px] text-gray-500 mt-0.5 font-medium italic">
+                                    <i class="fas fa-info-circle mr-1 text-indigo-400"></i>
+                                    Reminder: <strong>Package Limit</strong> (₦{{ number_format($logRequest->package_limit, 2) }}) is what the company can afford for this client. 
+                                    (Package Price: ₦{{ number_format($logRequest->package_price, 2) }} is what the client paid)
+                                </p>
+                            </div>
+                            @if($enrolment && $enrolment->isHighUtilization())
+                                <span class="bg-amber-600 text-white text-[9px] font-black px-2 py-1 rounded-full animate-pulse shadow-sm h-fit">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> MANAGEMENT ALERT: HIGH UTILIZATION
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="p-5">
+                            @if($enrolment)
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                                        <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Total Utilized</span>
+                                        <p class="text-lg font-black text-slate-800">₦{{ number_format($enrolment->total_utilized, 2) }}</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                                        <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Remaining Balance</span>
+                                        <p class="text-lg font-black {{ $enrolment->remaining_balance < 0 ? 'text-red-600' : 'text-emerald-600' }}">
+                                            ₦{{ number_format($enrolment->remaining_balance, 2) }}
+                                        </p>
+                                    </div>
+
+                                    <div class="px-2">
+                                        <div class="flex justify-between items-center mb-1.5">
+                                            <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-widest">Usage Rate</span>
+                                            <span class="text-xs font-bold font-mono {{ $enrolment->utilization_rate >= 80 ? 'text-amber-600' : 'text-indigo-600' }}">
+                                                {{ $enrolment->utilization_rate }}%
+                                            </span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner">
+                                            <div class="h-full rounded-full transition-all duration-1000 ease-out {{ $enrolment->utilization_rate >= 80 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-indigo-500 to-indigo-600' }}" 
+                                                 style="width: {{ min($enrolment->utilization_rate, 100) }}%"></div>
+                                        </div>
+                                        @if($enrolment->isHighUtilization())
+                                            <p class="text-[9px] text-amber-700 font-bold mt-2 italic">
+                                                <i class="fas fa-exclamation-circle mr-1"></i> Informed Management: High utilization detected.
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <div class="flex items-center justify-center p-4 bg-gray-50 border border-dashed border-gray-200 rounded-lg">
+                                    <p class="text-[10px] text-gray-400 italic">Historical utilization data not available for this record.</p>
+                                </div>
+                            @endif
+
+                            @if($logRequest->package_price > $logRequest->package_limit)
+                                <div class="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
+                                    </div>
+                                    <p class="text-xs text-red-800 font-medium">
+                                        <strong>Overage Detected:</strong> The Package Price exceeds the company-affordable limit by 
+                                        <span class="font-black text-red-600">₦{{ number_format($logRequest->package_price - $logRequest->package_limit, 2) }}</span>.
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Clinical Section --}}
                 <div class="p-8 space-y-8">
                     <section>

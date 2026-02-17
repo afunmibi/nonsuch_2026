@@ -6,8 +6,8 @@
         depCount: 0,
         selectedPackage: '',
         selectedHcp: '',
-        packages: {{ $packages->toJson() }},
-        hcps: {{ $hcps->toJson() }},
+        packages: @js($packages),
+        hcps: @js($hcps),
         get pkg() { return this.packages.find(p => p.package_code === this.selectedPackage) || {} },
         get hcp() { return this.hcps.find(h => h.hcp_pry_code === this.selectedHcp) || {} }
     }">

@@ -114,6 +114,14 @@
             calculateDrugClaimed() { return this.drugs.reduce((s, row) => s + (parseFloat(row.total_hcp_amount_claimed || 0)), 0); },
             calculateGrandTotal() { return this.calculateServiceApproved() + this.calculateDrugNet(); },
 
+            // Price/Limit Warning Methods
+            isPriceExceedingLimit() { 
+                return parseFloat(this.form.package_price || 0) > parseFloat(this.form.package_limit || 0); 
+            },
+            getPriceLimitDifference() { 
+                return parseFloat(this.form.package_price || 0) - parseFloat(this.form.package_limit || 0); 
+            },
+
             formatMoney(v) { return new Intl.NumberFormat('en-NG', { minimumFractionDigits: 2 }).format(v || 0); },
 
             submitBill() {
@@ -161,6 +169,51 @@
             </button>
         </div>
     </header>
+
+    {{-- <!-- ⚠️ PRICE EXCEEDS LIMIT WARNING BANNER -->
+    <div x-show="isPriceExceedingLimit()" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform -translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         class="bg-gradient-to-r from-red-50 via-orange-50 to-red-50 border-2 border-red-300 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+                <div class="h-14 w-14 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <h3 class="text-lg font-black text-red-900 uppercase tracking-wide">⚠️ Company Disadvantage Alert</h3>
+                    <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">OVERAGE DETECTED</span>
+                </div>
+                <p class="text-sm text-red-800 font-medium mb-3">
+                    The <strong>Package Price</strong> exceeds the <strong>Package Limit</strong> by 
+                    <span class="font-black text-red-600 text-lg mx-1">₦<span x-text="formatMoney(getPriceLimitDifference())"></span></span>
+                </p>
+                <div class="bg-white/60 rounded-lg p-3 border border-red-200">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Package Limit</p>
+                            <p class="text-sm font-mono font-bold text-slate-700">₦<span x-text="formatMoney(form.package_limit)"></span></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase font-bold text-red-500 mb-1">Package Price</p>
+                            <p class="text-sm font-mono font-bold text-red-600">₦<span x-text="formatMoney(form.package_price)"></span></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase font-bold text-orange-500 mb-1">Difference</p>
+                            <p class="text-sm font-mono font-bold text-orange-600">₦<span x-text="formatMoney(getPriceLimitDifference())"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-red-700 mt-3 italic">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    This indicates the company may be at a financial disadvantage. Please review and verify the pricing before proceeding.
+                </p>
+            </div>
+        </div>
+    </div> --}}
 
     <!-- Top Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -219,13 +272,22 @@
         </div>
 
         <!-- Package Details -->
-        <div class="glass-panel p-5 relative overflow-hidden group hover:shadow-md transition-all">
+        <div class="glass-panel p-5 relative overflow-hidden group hover:shadow-md transition-all"
+             :class="isPriceExceedingLimit() ? 'ring-2 ring-red-300 border-red-200' : ''">
              <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <i class="fas fa-box-open text-7xl text-purple-900"></i>
             </div>
+            
+            <!-- Warning Badge -->
+            <div x-show="isPriceExceedingLimit()" 
+                 class="absolute top-3 right-3 z-20 bg-red-600 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                <i class="fas fa-exclamation-triangle"></i>
+                OVERAGE
+            </div>
+            
             <div class="flex items-center gap-2 mb-4 relative z-10">
-                <div class="h-8 w-1 bg-purple-500 rounded-full"></div>
-                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Plan Details</h3>
+                <div class="h-8 w-1 rounded-full" :class="isPriceExceedingLimit() ? 'bg-red-500' : 'bg-purple-500'"></div>
+                <h3 class="text-sm font-bold uppercase tracking-wide" :class="isPriceExceedingLimit() ? 'text-red-800' : 'text-slate-800'">Plan Details</h3>
             </div>
             
             <div class="space-y-3 relative z-10">
@@ -237,17 +299,110 @@
                    <input x-model="form.package_description" class="w-full text-sm font-bold text-purple-900 bg-purple-50/50 border-0 rounded-lg px-3 py-2" placeholder="Plan Description">
                 </div>
                 <div class="grid grid-cols-2 gap-4 pt-2">
-                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                        <label class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Plan Limit</label>
-                        <input type="number" x-model.number="form.package_limit" class="w-full bg-transparent border-none p-0 text-sm font-mono font-bold text-slate-700 focus:ring-0" placeholder="0">
+                    <div class="bg-slate-50 p-2 rounded-lg border transition-all"
+                         :class="isPriceExceedingLimit() ? 'border-green-300 bg-green-50' : 'border-slate-100'">
+                        <label class="text-[9px] uppercase font-bold block mb-1" 
+                               :class="isPriceExceedingLimit() ? 'text-green-600' : 'text-slate-400'">
+                            Plan Limit <span x-show="isPriceExceedingLimit()" class="text-[8px]">✓</span>
+                        </label>
+                        <input type="number" x-model.number="form.package_limit" 
+                               class="w-full bg-transparent border-none p-0 text-sm font-mono font-bold focus:ring-0" 
+                               :class="isPriceExceedingLimit() ? 'text-green-700' : 'text-slate-700'"
+                               placeholder="0">
                     </div>
-                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                        <label class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Plan Price</label>
-                        <input type="number" x-model.number="form.package_price" class="w-full bg-transparent border-none p-0 text-sm font-mono font-bold text-slate-700 focus:ring-0" placeholder="0">
+                    <div class="bg-slate-50 p-2 rounded-lg border transition-all"
+                         :class="isPriceExceedingLimit() ? 'border-red-300 bg-red-50' : 'border-slate-100'">
+                        <label class="text-[9px] uppercase font-bold block mb-1" 
+                               :class="isPriceExceedingLimit() ? 'text-red-600' : 'text-slate-400'">
+                            Plan Price <span x-show="isPriceExceedingLimit()" class="text-[8px]">⚠</span>
+                        </label>
+                        <input type="number" x-model.number="form.package_price" 
+                               class="w-full bg-transparent border-none p-0 text-sm font-mono font-bold focus:ring-0" 
+                               :class="isPriceExceedingLimit() ? 'text-red-700' : 'text-slate-700'"
+                               placeholder="0">
+                    </div>
+                </div>
+                
+                <!-- Difference Display -->
+                <div x-show="isPriceExceedingLimit()" 
+                     x-transition
+                     class="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3 mt-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[9px] uppercase font-bold text-orange-600">Overage Amount:</span>
+                        <span class="text-sm font-black text-red-600">₦<span x-text="formatMoney(getPriceLimitDifference())"></span></span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Utilization Tracking -->
+        @if($enrolment)
+        <div class="glass-panel p-5 relative overflow-hidden group hover:shadow-md transition-all {{ $enrolment->isHighUtilization() ? 'ring-2 ring-amber-300 border-amber-200' : '' }}">
+            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <i class="fas fa-chart-pie text-7xl text-blue-900"></i>
+            </div>
+            
+            @if($enrolment->isHighUtilization())
+            <div class="absolute top-3 right-3 z-20 bg-amber-600 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-lg animate-pulse flex items-center gap-1">
+                <i class="fas fa-exclamation-circle"></i>
+                HIGH USAGE
+            </div>
+            @endif
+            
+            <div class="flex items-center gap-2 mb-4 relative z-10">
+                <div class="h-8 w-1 rounded-full {{ $enrolment->isHighUtilization() ? 'bg-amber-500' : 'bg-blue-500' }}"></div>
+                <h3 class="text-sm font-bold uppercase tracking-wide {{ $enrolment->isHighUtilization() ? 'text-amber-800' : 'text-slate-800' }}">
+                    Client Utilization
+                </h3>
+            </div>
+            
+            <div class="space-y-3 relative z-10">
+                <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                    <p class="text-[9px] uppercase font-bold text-blue-600 mb-1">
+                        <i class="fas fa-info-circle mr-1"></i>Package Limit Info
+                    </p>
+                    <p class="text-[10px] text-slate-600 leading-relaxed">
+                        <strong>Package Limit</strong> is what the company can afford for this client. 
+                        <strong>Package Price</strong> is the amount paid by the client.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <label class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Total Utilized</label>
+                        <p class="text-sm font-mono font-bold text-slate-700">₦{{ number_format($enrolment->total_utilized, 2) }}</p>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <label class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Remaining</label>
+                        <p class="text-sm font-mono font-bold {{ $enrolment->remaining_balance < 0 ? 'text-red-600' : 'text-green-600' }}">
+                            ₦{{ number_format($enrolment->remaining_balance, 2) }}
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <label class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Usage %</label>
+                        <p class="text-sm font-mono font-bold {{ $enrolment->utilization_rate >= 80 ? 'text-amber-600' : 'text-blue-600' }}">
+                            {{ number_format($enrolment->utilization_rate, 1) }}%
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div class="h-full rounded-full transition-all {{ $enrolment->utilization_rate >= 80 ? 'bg-amber-500' : 'bg-blue-500' }}" 
+                         style="width: {{ min($enrolment->utilization_rate, 100) }}%"></div>
+                </div>
+
+                @if($enrolment->isHighUtilization())
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-3">
+                    <p class="text-[10px] font-bold text-amber-800">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        MANAGEMENT ALERT: High utilization detected ({{ number_format($enrolment->utilization_rate, 1) }}%). Inform management that utilization is high for this client.
+                    </p>
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
         
         <!-- Billing Period -->
         <div class="glass-panel p-5 relative overflow-hidden group hover:shadow-md transition-all">

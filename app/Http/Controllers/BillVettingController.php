@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Auth, Log};
-use App\Models\{VettedDrug, VettedService, BillVetting, LogRequest};
+use App\Models\{VettedDrug, VettedService, BillVetting, LogRequest, Enrolment};
 use Carbon\Carbon;
 
 class BillVettingController extends Controller
@@ -94,7 +94,8 @@ class BillVettingController extends Controller
             'pa_code'     => '',
             'vettedServices' => collect(),
             'vettedDrugs'    => collect(),
-            'history'        => collect()
+            'history'        => collect(),
+            'enrolment'      => null
         ]);
     }
 
@@ -111,6 +112,9 @@ class BillVettingController extends Controller
                            ->with('error', 'PA Code not found in system.');
         }
 
+        // Fetch enrolment data for utilization tracking
+        $enrolment = Enrolment::where('policy_no', $billVetting->policy_no)->first();
+
         // Fetch history based on policy number from BillVetting table
         $history = BillVetting::where('policy_no', $billVetting->policy_no)
             ->where('pa_code', '!=', $pa_code)
@@ -123,7 +127,7 @@ class BillVettingController extends Controller
 
         // Return the view with all necessary data
         return view("{$this->viewPath}.edit", compact(
-            'billVetting', 'pa_code', 'vettedServices', 'vettedDrugs', 'history'
+            'billVetting', 'pa_code', 'vettedServices', 'vettedDrugs', 'history', 'enrolment'
         ));
 
     } catch (\Exception $e) {
@@ -349,6 +353,9 @@ class BillVettingController extends Controller
         // Fetch the BillVetting record with related services and drugs
         $billVetting = BillVetting::with(['services', 'drugs', 'monitoring'])->where('pa_code', $pa_code)->firstOrFail();
         
+        // Fetch enrolment for utilization checking
+        $enrolment = Enrolment::where('policy_no', $billVetting->policy_no)->first();
+        
         // Retrieve vetted services and drugs
         $vettedServices = $billVetting->services;
         $vettedDrugs = $billVetting->drugs;
@@ -360,7 +367,7 @@ class BillVettingController extends Controller
 
         // Return view with conditions (pass as 'log' for backward compatibility with view)
         $log = $billVetting;
-        return view("{$this->viewPath}.show", compact('log', 'billVetting', 'vettedServices', 'vettedDrugs', 'isVettedByEmpty'));
+        return view("{$this->viewPath}.show", compact('log', 'billVetting', 'vettedServices', 'vettedDrugs', 'isVettedByEmpty', 'enrolment'));
         
     } catch (\Exception $e) {
         return redirect()->route('bill-vetting.index')->with('error', 'Record not found.');

@@ -7,12 +7,26 @@
         depCount: 0,
         selectedPackage: '',
         selectedHcp: '',
-        packages: {{ $packages->toJson() }},
-        hcps: {{ $hcps->toJson() }},
+        packages: @js($packages),
+        hcps: @js($hcps),
         get pkg() { return this.packages.find(p => p.package_code === this.selectedPackage) || {} },
-        get hcp() { return this.hcps.find(h => h.hcp_pry_code === this.selectedHcp) || {} }
+        get hcp() { return this.hcps.find(h => h.hcp_name === this.selectedHcp) || {} }
     }">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl shadow-sm">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span class="font-bold">Please correct the following errors:</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('enrolments.store') }}" enctype="multipart/form-data" class="space-y-8">
                 @csrf
 
@@ -32,22 +46,22 @@
 
                         <div>
                             <x-input-label value="Full Name (Principal)" />
-                            <x-text-input name="full_name" class="w-full mt-1" required />
+                            <x-text-input name="full_name" class="w-full mt-1" :value="old('full_name')" required />
                         </div>
 
                         <div>
                             <x-input-label value="Date of Birth" />
-                            <x-text-input type="date" name="dob" class="w-full mt-1" required />
+                            <x-text-input type="date" name="dob" class="w-full mt-1" :value="old('dob')" required />
                         </div>
 
                         <div>
                             <x-input-label value="Phone Number" />
-                            <x-text-input name="phone_no" class="w-full mt-1" required />
+                            <x-text-input name="phone_no" class="w-full mt-1" :value="old('phone_no')" required />
                         </div>
 
                         <div>
                             <x-input-label value="Email Address" />
-                            <x-text-input type="email" name="email" class="w-full mt-1" required />
+                            <x-text-input type="email" name="email" class="w-full mt-1" :value="old('email')" required />
                         </div>
 
                         <div class="md:col-span-2">
@@ -57,7 +71,7 @@
 
                         <div>
                             <x-input-label value="Location (State/City)" />
-                            <x-text-input name="location" class="w-full mt-1" required />
+                            <x-text-input name="location" class="w-full mt-1" :value="old('location')" required />
                         </div>
 
                         <div>
@@ -78,7 +92,7 @@
                                     <option value="{{ $hcp->hcp_name }}">{{ $hcp->hcp_name }}</option>
                                 @endforeach
                             </select>
-                            <input type="hidden" name="pry_hcp_code" :value="pkg.hcp_pry_code">
+                            <input type="hidden" name="pry_hcp_code" :value="hcp.hcp_code">
                         </div>
                         <div>
                             <label class="block text-sm font-bold mb-1">Select Package Code</label>

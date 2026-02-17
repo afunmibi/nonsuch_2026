@@ -8,7 +8,7 @@
     <div class="max-w-7xl mx-auto p-6 pb-24" x-data="cmEditApp({
         pa_code: '{{ $log->pa_code }}',
         encoded_pa: '{{ base64_encode($log->pa_code) }}',
-        hcps: {{ $hcps->toJson() }}
+        hcps: @js($hcps)
     })" x-cloak>
 
         <!-- TOP HEADER PANEL (COMPACT) -->

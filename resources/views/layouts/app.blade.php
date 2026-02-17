@@ -41,7 +41,7 @@
                 <!-- Logo -->
                 <div class="flex items-center justify-center h-16 px-4 bg-sky-600 border-b border-sky-700">
                     <i class="fas fa-hospital-user text-white text-2xl mr-3"></i>
-                    <span class="text-white font-bold text-lg">NONSUCH</span>
+                    <span class="text-white font-bold text-lg">NONSUCH PORTAL</span>
                 </div>
 
                 <!-- Navigation -->
@@ -272,7 +272,6 @@
                 </a>
                 @endif
             </div>
-            </nav>
 
             <!-- User Profile Section -->
             <div class="border-t border-gray-200 p-4">

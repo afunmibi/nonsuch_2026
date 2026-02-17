@@ -46,4 +46,28 @@ class Enrolment extends Model
         
         return round(($totalSpent / $this->package_limit) * 100, 2);
     }
+
+    /**
+     * Get total amount utilized/spent
+     */
+    public function getTotalUtilizedAttribute()
+    {
+        return $this->billVettings()->sum('hcp_amount_due_grandtotal');
+    }
+
+    /**
+     * Get remaining balance (package_limit - total_utilized)
+     */
+    public function getRemainingBalanceAttribute()
+    {
+        return $this->package_limit - $this->total_utilized;
+    }
+
+    /**
+     * Check if utilization is high (>80%)
+     */
+    public function isHighUtilization()
+    {
+        return $this->utilization_rate >= 80;
+    }
 }
