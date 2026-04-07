@@ -1,3 +1,121 @@
+# Nonsuch (2026)
+
+A Laravel-based medical claims / vetting application used for development and testing.
+
+**Quick summary**: this repository is a Laravel app. Use XAMPP or another local LAMP stack, set the database in `./.env`, install dependencies, then run migrations and seeders.
+
+**Status**: Development
+
+---
+
+**Prerequisites**
+- **PHP** 8.x (as required by the installed Laravel version)
+- **Composer**
+- **Node.js** + **npm** (for frontend assets)
+- **MySQL** (or MariaDB) — commonly provided by XAMPP on Windows
+
+**Repository layout (important files)**
+- `app/` — Laravel application code
+- `database/seeders/DatabaseSeeder.php` — seeds default data (includes an admin seed)
+- `database/factories/UserFactory.php` — user factory used by seeders
+- `routes/web.php` — web routes
+- `public/` — web entry (served by local server)
+
+---
+
+**Setup (local development)**
+
+1. Clone repository and change directory:
+
+```powershell
+cd C:\path\to\projects
+git clone <repo-url>
+cd nonsuch_2026
+```
+
+2. Install PHP dependencies:
+
+```powershell
+composer install
+```
+
+3. Install Node dependencies and build assets (dev):
+
+```powershell
+npm install
+npm run dev
+```
+
+4. Copy the environment file and generate an app key:
+
+```powershell
+copy .env.example .env
+php artisan key:generate
+```
+
+5. Configure database credentials in `./.env` (e.g. `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+
+6. Run migrations and seeders (seed will create a test user and an admin user):
+
+```powershell
+php artisan migrate --force
+php artisan db:seed --class=DatabaseSeeder
+```
+
+Notes:
+- If you want a completely fresh database (destroys all data) use:
+
+```powershell
+php artisan migrate:fresh --seed
+```
+
+---
+
+
+
+The seeder that creates/updates this account is `database/seeders/DatabaseSeeder.php`. Change or remove this code as appropriate for production.
+
+To change the admin password quickly (using PowerShell):
+
+```powershell
+php artisan tinker
+use App\Models\User; use Illuminate\Support\Facades\Hash;
+$user = User::where('email', 'afunmibi@gmail.com')->first();
+$user->password = Hash::make('YourNewStrongPassword'); $user->save(); exit
+```
+
+---
+
+**Testing**
+
+Run the project's test suite with PHPUnit:
+
+```powershell
+./vendor/bin/phpunit
+```
+
+---
+
+**Troubleshooting**
+- Duplicate email error when seeding: make the user creation idempotent (the included seeder uses `updateOrCreate`/`update`) or remove existing conflicting users before running the seed.
+- If mail or queue features fail, check `MAIL_` and `QUEUE_` variables in `./.env`.
+
+---
+
+**Security & deployment notes**
+- DO NOT ship the seeded admin password to production. Remove or protect the admin seed and rotate passwords before deployment.
+- Use environment variables for production secrets and a secure storage mechanism for any generated credentials.
+
+---
+
+If you want, I can:
+- Remove the persistent admin creation from `database/seeders/DatabaseSeeder.php`.
+- Add a command to generate a strong admin password and print it to the console.
+- Create a CONTRIBUTING.md with development workflow guidelines.
+
+---
+
+Maintainers: repository owner
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
